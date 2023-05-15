@@ -7,7 +7,7 @@ const App = (): JSX.Element => {
   const routes = getRoutes();
 
   return (
-    <div className="container w-3/4 m-auto mt-6">
+    <div className="container w-3/4 m-auto h-screen">
       <Suspense fallback={<div>loading...</div>}>
         <Routes>
           {routes.map(({ id, ...other }) => (

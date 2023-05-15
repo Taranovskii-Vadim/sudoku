@@ -7,9 +7,9 @@ const Game = lazy(() => import('../pages/Game'));
 
 const ROOT = '/';
 const NODES: Nodes = { home: <Home />, game: <Game /> };
-const PATHS: Paths = { home: ROOT, game: `${ROOT}game/:level` };
+const PATHS: Paths = { home: ROOT, game: `${ROOT}game/:mode` };
 
-export const getGamePagePath = (level: string): string => `${ROOT}game/${level}`;
+export const getGamePagePath = (mode: Mode): string => `${ROOT}game/${mode}`;
 
 export const getRoutes = (): Route[] => {
   const keys = Object.keys(NODES) as RouteKey[];
