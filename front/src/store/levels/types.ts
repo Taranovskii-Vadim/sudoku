@@ -1,5 +1,5 @@
 export type Level = {
-  id: Mode;
+  id: GameMode;
   title: string;
   img: string;
 };

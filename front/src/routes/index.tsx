@@ -9,7 +9,7 @@ const ROOT = '/';
 const NODES: Nodes = { home: <Home />, game: <Game /> };
 const PATHS: Paths = { home: ROOT, game: `${ROOT}game/:mode` };
 
-export const getGamePagePath = (mode: Mode): string => `${ROOT}game/${mode}`;
+export const getGamePagePath = (mode: GameMode): string => `${ROOT}game/${mode}`;
 
 export const getRoutes = (): Route[] => {
   const keys = Object.keys(NODES) as RouteKey[];
