@@ -13,4 +13,9 @@ export const LEVELS: Level[] = [
     title: 'Средний уровень',
     img: `${BASE_URL}/887c4565db2d97ff3a0475b78b296762.jpg`,
   },
+  {
+    id: 'hard',
+    title: 'Сложный уровень',
+    img: `${BASE_URL}/887c4565db2d97ff3a0475b78b296762.jpg`,
+  },
 ];
