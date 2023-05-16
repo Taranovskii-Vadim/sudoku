@@ -8,7 +8,7 @@ const Home = (): JSX.Element => {
   const state = useRecoilValue(levelsState);
 
   return (
-    <div className="flex items-center justify-around h-full">
+    <div className="flex flex-1 items-center justify-around h-full">
       {state.map((item) => (
         <Card key={item.id} data={item} />
       ))}

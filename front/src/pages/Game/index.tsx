@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, FormEvent } from 'react';
 import { useRecoilValue } from 'recoil';
 import { useParams } from 'react-router-dom';
 
@@ -10,8 +10,8 @@ const Game = (): JSX.Element => {
   const { mode } = useParams<{ mode: GameMode }>();
   const { id, template } = useRecoilValue(gameQuery(mode));
 
-  const config = { length: template.length };
   const payloadRef = useRef(template);
+  const config = { length: template.length };
   const ref = useRef<HTMLInputElement[][]>(Array.from(config, () => Array.from(config)));
 
   useEffect(() => {
@@ -51,53 +51,68 @@ const Game = (): JSX.Element => {
   };
 
   const handleChange = (y: number, x: number, value: string): void => {
-    payloadRef.current[y][x] = value;
+    // TODO got no idea but we get error here, in next js this is file solution without erros
+    // payloadRef.current[y][x] = value;
+
+    payloadRef.current = payloadRef.current.map((row, rowIndex) => {
+      if (rowIndex === y) {
+        return row.map((cell, cellIndex) => {
+          if (cellIndex === x) {
+            return value;
+          }
+          return cell;
+        });
+      }
+
+      return row;
+    });
   };
 
-  // const handleSubmit = async (e: FormEvent): Promise<void> => {
-  //   try {
-  //     e.preventDefault();
-  //     setIsLoading(true);
-  //     const body = JSON.stringify({ id, data: payloadRef.current, mode });
-  //     const config = { method: 'POST', body };
+  const handleSubmit = async (e: FormEvent): Promise<void> => {
+    try {
+      e.preventDefault();
 
-  //     const response = await fetch(`${API_PREFIX}/game/check`, config);
-  //     const errors: boolean[][] = await response.json();
+      console.log(payloadRef.current);
 
-  //     setErrors(errors);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
+      // setIsLoading(true);
+      // const body = JSON.stringify({ id, data: payloadRef.current, mode });
+      // const config = { method: 'POST', body };
+
+      // const response = await fetch(`${API_PREFIX}/game/check`, config);
+      // const errors: boolean[][] = await response.json();
+
+      // setErrors(errors);
+    } finally {
+      // setIsLoading(false);
+    }
+  };
 
   return (
-    <form className={`grid grid-cols-${mode === 'easy' ? 4 : 9} gap-4`}>
+    <form
+      onSubmit={handleSubmit}
+      className={`grid m-auto ${mode === 'easy' ? 'grid-cols-4 max-w-xs' : 'grid-cols-9 max-w-xl'} gap-4`}
+    >
       {template.map((row, y) =>
         row.map((value, x) => (
           <input
-            value={value}
+            // status={!errors[y][x] ? 'default' : 'error'}
+            defaultValue={value}
             key={`${value}${x}`}
             onChange={(e) => handleChange(y, x, e.target.value)}
             ref={(el) => (ref.current[y][x] = el as HTMLInputElement)}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5 text-center"
             onKeyDown={(e) => handleFocusInput(e.key.toLowerCase() as Arrow, y, x)}
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5 text-center"
           />
-          // <Grid key={`${value}${x}`} xs={12 / row.length}>
-          //   <Input
-          //     value={value}
-          //     data-testid="inp"
-          //     aria-label={`${y}${x}`}
-          //     ref={(el) => (ref.current[y][x] = el as FormElement)}
-          //     style={{ textAlign: 'center' }}
-          //     status={!errors[y][x] ? 'default' : 'error'}
-          //     onChange={(e) => handleChange(y, x, e.target.value)}
-          //     onKeyDown={(e) => handleFocusInput(e.key.toLowerCase() as Arrow, y, x)}
-          //   />
-          // </Grid>
         )),
       )}
-      <button className={`bg-slate-600 text-center`}>submit</button>
       {/* <Submit isDone={isDone} isLoading={isLoading} text={isDone ? 'Решено!!!' : 'Проверить решение'} /> */}
+      <button
+        className={`text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none ${
+          mode === 'easy' ? 'col-span-4' : 'col-span-9'
+        }`}
+      >
+        Отправить
+      </button>
     </form>
   );
 };
