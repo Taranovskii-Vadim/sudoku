@@ -19,8 +19,12 @@ const axiosInsatnce = axios.create({ baseURL });
 //   },
 // );
 
-export const api = async <D>(r: Route<D>, q?: string): Promise<D> => {
-  const config: AxiosRequestConfig = { method: r.method, url: r.getUrl(q) };
+export const api = async <D>(r: Route<D>, q?: GameMode, p?: Record<string, unknown>): Promise<D> => {
+  let config: AxiosRequestConfig = { method: r.method, url: r.getUrl(q) };
+
+  if (p) {
+    config = { ...config, data: p };
+  }
 
   const { data } = await axiosInsatnce.request<D>(config);
 

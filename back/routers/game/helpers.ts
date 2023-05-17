@@ -1,3 +1,5 @@
+import { GameMode } from "../types";
+
 import { Sudoku } from "./types";
 import { GAMES } from "./constants";
 

@@ -1,4 +1,4 @@
-export type Method = 'GET';
+export type Method = 'GET' | 'POST';
 
 export type Route<D = unknown> = {
   method: Method;

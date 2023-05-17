@@ -1,5 +1,7 @@
 import { Request } from "express";
 
+import { GameMode } from "../types";
+
 export type Sudoku = {
   id: number;
   template: string[][];
