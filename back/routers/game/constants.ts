@@ -22,5 +22,5 @@ const FIRST_MEDIUM: string[][] = [
 export const GAMES: Games = {
   easy: [{ id: 1, template: FIRST_EASY }],
   medium: [{ id: 1, template: FIRST_MEDIUM }],
-  hard: [],
+  hard: [{ id: 1, template: FIRST_MEDIUM }],
 };
