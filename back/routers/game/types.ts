@@ -1,10 +1,11 @@
 import { Request } from "express";
 
-type Sudoku = {
+export type Sudoku = {
   id: number;
   template: string[][];
 };
 
 export type Games = Record<GameMode, Sudoku[]>;
 
-export type Req = Request<{ level: GameMode }>;
+export type GetGameReq = Request<{ level: GameMode }>;
+export type CheckReq = Request<any, any, Sudoku & { mode: GameMode }>;
