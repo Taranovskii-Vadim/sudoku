@@ -53,7 +53,6 @@ const Game = (): JSX.Element => {
   };
 
   const handleChange = (y: number, x: number, value: string): void => {
-    // TODO got no idea but we get error here, in next js this is file solution without erros
     // payloadRef.current[y][x] = value;
 
     payloadRef.current = payloadRef.current.map((row, rowIndex) => {
