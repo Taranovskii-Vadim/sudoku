@@ -1,6 +1,7 @@
 import { useRef, useEffect, FormEvent, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import { useParams } from 'react-router-dom';
+import styled from 'styled-components';
 
 import { api } from 'src/api';
 import postGame from 'src/api/postGame';
@@ -8,6 +9,71 @@ import postGame from 'src/api/postGame';
 import { gameQuery } from 'src/store/game';
 
 import { Arrow } from './types';
+
+type Props = { mode: GameMode };
+
+const Form = styled.form<Props>`
+  margin: auto;
+  display: grid;
+  gap: 1rem;
+  padding-top: 12px;
+  max-width: ${({ mode }) => (mode === 'easy' ? 20 : 36)}rem;
+  grid-template-columns: repeat(${({ mode }) => (mode === 'easy' ? 4 : 9)}, minmax(0, 1fr));
+`;
+
+const Field = styled.input<{ color: string | false }>`
+  border: 1px solid #d1d5db;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  border-radius: 0.5rem;
+  text-align: center;
+  padding: 0.625rem;
+  background-color: #f9fafb;
+  color: ${({ color }) => color || '#111827'};
+  &:focus {
+    border-color: #3b82f6;
+  }
+`;
+
+const Submit = styled.button<Props & { isDone: boolean }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  padding-top: 0.625rem;
+  padding-bottom: 0.625rem;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+  background-color: ${({ isDone }) => (isDone ? '#15803d' : '#1d4ed8')};
+  grid-column: ${({ mode }) => (mode === 'easy' ? 'span 4 / span 4' : 'span 9 / span 9')};
+  &:hover {
+    background-color: ${({ isDone }) => (isDone ? '#166534' : '#1e40af')};
+  }
+`;
+
+const Loader = styled.svg`
+  color: white;
+  display: inline;
+  margin-right: 0.75rem;
+  width: 1rem;
+  height: 1rem;
+  animation: spin 1s linear infinite;
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+`;
 
 const Game = (): JSX.Element => {
   const { mode } = useParams<{ mode: GameMode }>();
@@ -84,46 +150,24 @@ const Game = (): JSX.Element => {
 
   const isDone = errors.every((row) => row.every((item) => item === false));
 
-  const btnColorType = isDone ? 'green' : 'blue';
-  const buttonSize = mode === 'easy' ? 'col-span-4' : 'col-span-9';
-  const buttonColor = `bg-${btnColorType}-700 hover:bg-${btnColorType}-800`;
-
-  const buttonStyle = `${buttonSize} ${buttonColor}`;
-
   return (
-    <form
-      onSubmit={handleSubmit}
-      className={`grid m-auto ${mode === 'easy' ? 'grid-cols-4 max-w-xs' : 'grid-cols-9 max-w-xl'} gap-4`}
-    >
+    <Form mode={mode as GameMode} onSubmit={handleSubmit}>
       {template.map((row, y) =>
-        row.map((value, x) => {
-          const color = errors[y][x] ? 'text-red-600' : 'text-black';
-
-          return (
-            <input
-              defaultValue={value}
-              key={`${value}${x}`}
-              onChange={(e) => handleChange(y, x, e.target.value)}
-              ref={(el) => (ref.current[y][x] = el as HTMLInputElement)}
-              onKeyDown={(e) => handleFocusInput(e.key.toLowerCase() as Arrow, y, x)}
-              className={`bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5 text-center ${color}`}
-            />
-          );
-        }),
+        row.map((value, x) => (
+          <Field
+            type="text"
+            defaultValue={value}
+            key={`${value}${x}`}
+            color={errors[y][x] && '#dc2626'}
+            onChange={(e) => handleChange(y, x, e.target.value)}
+            ref={(el) => (ref.current[y][x] = el as HTMLInputElement)}
+            onKeyDown={(e) => handleFocusInput(e.key.toLowerCase() as Arrow, y, x)}
+          />
+        )),
       )}
-      <button
-        disabled={isLoading || isDone}
-        className={`text-white font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none ${buttonStyle}`}
-      >
+      <Submit isDone={isDone} mode={mode as GameMode} type="submit" disabled={isLoading || isDone}>
         {isLoading ? (
-          <svg
-            aria-hidden="true"
-            role="status"
-            className="inline w-4 h-4 mr-3 text-white animate-spin"
-            viewBox="0 0 100 101"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
+          <Loader aria-hidden="true" role="status" viewBox="0 0 100 101" fill="none">
             <path
               d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
               fill="#E5E7EB"
@@ -132,11 +176,11 @@ const Game = (): JSX.Element => {
               d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
               fill="currentColor"
             />
-          </svg>
+          </Loader>
         ) : null}
         {isLoading ? 'Обработка результатов...' : isDone ? 'Решено!!!' : 'Проверить решение'}
-      </button>
-    </form>
+      </Submit>
+    </Form>
   );
 };
 
