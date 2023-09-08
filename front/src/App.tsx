@@ -2,12 +2,13 @@ import { Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 
 import { getRoutes } from 'src/routes';
+import Container from './components/Container';
 
 const App = (): JSX.Element => {
   const routes = getRoutes();
 
   return (
-    <div className="container flex w-3/4 m-auto h-screen">
+    <Container>
       <Suspense fallback={<div>loading...</div>}>
         <Routes>
           {routes.map(({ id, ...other }) => (
@@ -15,7 +16,7 @@ const App = (): JSX.Element => {
           ))}
         </Routes>
       </Suspense>
-    </div>
+    </Container>
   );
 };
 
